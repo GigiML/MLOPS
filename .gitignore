@@ -14,3 +14,9 @@ data
 */.ipynb_checkpoints/*
 
 mlflow
+*/__pycache__
+__pycache__
+notebooks/__pycache__
+tests/.pytest_cache
+.pytest_cache
+*.egg-info

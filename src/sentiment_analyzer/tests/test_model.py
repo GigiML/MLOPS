@@ -3,6 +3,7 @@ import pytest
 import os
 import numpy as np
 import pandas as pd
+
 # export TEST_MODEL_NAME=LR-production
 # export TEST_MODEL_VERSION=1
 # export TEST_TEST_SET=/data/archive/test.csv
@@ -43,6 +44,20 @@ def test_obvious_output(load_model):
 
 @pytest.mark.skipif(os.getenv("TEST_TEST_SET", "0") == "0",reason="TEST_TEST_SET not defined")
 def test_accuracy(load_model):
+    
+    current_script_path = os.path.abspath(__file__)
+
+    project_root = current_script_path
+    while os.path.basename(os.path.dirname(project_root)) != 'mlops':
+        project_root = os.path.dirname(project_root)
+    project_root = os.path.dirname(project_root)  
+
+    os.chdir(project_root)
+    new_path = os.getcwd()
+    print(f"Nouveau chemin racine : {new_path}")
+    
+
+    print(os.getenv("TEST_TEST_SET"))
     df_test = pd.read_csv(os.getenv("TEST_TEST_SET"))
     X_test, y_test = df_test["review"],  df_test["polarity"]
     score = load_model.score(X_test, y_test)

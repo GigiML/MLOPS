@@ -1,6 +1,6 @@
 import click
 import pandas as pd
-from sentiment_analyser.model_manager import ModelManager
+from sentiment_analyzer.model_manager import ModelManager
 
 
 @click.command()

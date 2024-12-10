@@ -24,7 +24,12 @@ docker:
 	$(VENV_ACTIVATE) && colima start
 
 run-api:
-	$(VENV_ACTIVATE) && rm -rf /tmp/sentiment-analyzer-model/ && $(PYTHON) webapp/get_mlflow_model.py && uvicorn webapp.app:app --host 0.0.0.0
+	$(VENV_ACTIVATE) && rm -rf /tmp/sentiment-analyzer-model/ && $(PYTHON) webapp/get_mlflow_model.py && uvicorn webapp.app:app --host 0.0.0.0 --port 8000
+
+run-front: $(VENV_ACTIVATE)
+	$(VENV_ACTIVATE) && $(PYTHON) -m streamlit run --server.port 8501 src/frontend/app.py 1> /dev/null 2> /dev/null &
+
+run-all: run-api run-front
 
 build:
 	cd webapp && docker build -t sentiment-analyzer:1-LR-staging-1 \
@@ -33,7 +38,5 @@ build:
     --build-arg MODEL_VERSION=1 \
     .
 
-
 run-docker:
-	cd webapp && 
-	docker run -p 8001:8000 --name sentiment-analyzer-container sentiment-analyzer:1-LR-staging-1
+	cd webapp && docker run -p 8001:8000 --name sentiment-analyzer-container sentiment-analyzer:1-LR-staging-1

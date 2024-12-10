@@ -1,0 +1,10 @@
+services:
+  sentiment-analyzer:
+    image: sentiment-analyzer:1-LR-staging-1
+  
+  frontend:
+    build: ./src/frontend
+    ports:
+      - "8501:8501"
+    environment:
+      - url_api=http://sentiment-analyzer:8000/predict

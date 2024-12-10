@@ -5,6 +5,11 @@ import numpy as np
 import pickle
 import uvicorn
 import pandas as pd
+from loguru import logger
+
+
+
+
 
 app = FastAPI(
     title="Sentiment Analysis API",
@@ -48,10 +53,17 @@ def predict(input: PredictInput):
             "sentiments": ["positif", "négatif"]
         }
     """
-    pred = model.predict(input.reviews)
-    sentiments = ["positif" if p == 1 else "négatif" for p in pred]
-    return {"sentiments": sentiments}
+    print(logger.info("predict function","param",input.reviews))
+    try:
+        pred = model.predict(input.reviews)
+        sentiments = ["positif" if p == 1 else "négatif" for p in pred]
+        return {"sentiments": sentiments}
+    except Exception as e:
+        print(logger.error("Une erreur s'est produite : %s", str(e)))
 
+    print(logger.debug())
+        
+    
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
 #uvicorn app:app --host 0.0.0.0

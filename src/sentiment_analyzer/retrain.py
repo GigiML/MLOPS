@@ -10,7 +10,9 @@ from sentiment_analyzer.model_manager import ModelManager
 @click.option('--register-updated-model', is_flag=True, help='If set, automatically register the model in MLFlow registry as a new version.')
 def retrain(model_name, model_version, mlflow_url, training_set, training_set_id, register_updated_model):
     """Retrain a model using new data without changing its training configuration."""
+    # Initialize the ModelManager with the specified model details
     model_manager = ModelManager(model_name=model_name, model_version=model_version, mlflow_url=mlflow_url)
+    # Call the retrain method of ModelManager
     model_manager.retrain(training_set, training_set_id, register_updated_model)
 
 if __name__ == '__main__':

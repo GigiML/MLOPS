@@ -16,16 +16,18 @@ def main(input_file, output_file, text, model_name, model_version, mlflow_url):
     if the output file is specified the prediction will be written in. """
     if not (input_file or text):
         raise click.BadParameter("Exactly one of --input_file or --text must be provided.")
+    # Initialize the ModelManager with the specified model details
     manager = ModelManager(model_name=model_name, model_version=model_version, mlflow_url=mlflow_url)
-
+    # Process input file if provided
     if input_file:
         predictions = manager.predict_from_file(input_file)
         if output_file:
             pd.DataFrame(predictions).to_csv(output_file, index=False)
             click.echo(f'Predictions saved to {output_file}.')
         else:
+            # Display predictions in console if no output file is specified
             click.echo(predictions)
-    
+    # Process single text input if provided
     if text:
         df = pd.DataFrame(data={"review": [text]})
         prediction = manager.predict(df)

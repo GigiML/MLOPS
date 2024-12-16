@@ -3,8 +3,9 @@ import subprocess
 from mlflow.tracking import MlflowClient
 import mlflow
 import os
-
 from pathlib import Path
+
+# Set MLflow tracking URI
 mlflow.set_tracking_uri(uri="http://localhost:5000")
 
 @click.command()
@@ -16,11 +17,11 @@ mlflow.set_tracking_uri(uri="http://localhost:5000")
 def promote(model_name, model_version, status, test_set):
     """Promote a model in MLFlow after running tests if necessary.""" 
     client = MlflowClient()
-
+    # Get current model version details
     model_version_details = client.get_model_version(name=model_name, version=model_version)
     current_stage = model_version_details.current_stage
     print(f"Current stage: {current_stage}")
-
+    # Promotion from None to Staging
     if current_stage == "None" and status == "Staging":
         client.transition_model_version_stage(
             name=model_name,
@@ -29,7 +30,7 @@ def promote(model_name, model_version, status, test_set):
         )
         print(f"Model {model_name} version {model_version} has been promoted from None to {status}")
     
-    
+    # Promotion from Staging to Production
     elif current_stage == "Staging" and status == "Production":
         os.environ["TEST_MODEL_NAME"] = model_name
         os.environ["TEST_MODEL_VERSION"] = model_version
@@ -41,6 +42,7 @@ def promote(model_name, model_version, status, test_set):
             capture_output=True,
             text=True
         )
+        # Promote if tests pass
         if test_result.returncode == 0:
             client.transition_model_version_stage(
                 name=model_name,
@@ -50,7 +52,7 @@ def promote(model_name, model_version, status, test_set):
             print(f"Model {model_name} version {model_version} has been promoted from Staging to {status}")
         else:
             print(f"No change in status. Current stage: {current_stage}, Because the tests didn't pass")
-
+    # Promotion from Production to Archived
     elif current_stage == "Production" and status == "Archived" :
         client.transition_model_version_stage(
         name=model_name,
